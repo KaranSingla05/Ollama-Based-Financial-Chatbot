@@ -1,0 +1,23 @@
+version: '3'
+services:
+  streamlit:
+    build: .
+    container_name: chatbot_ollama
+    ports:
+      - "8501:8501"
+    networks:
+      - my-network
+    depends_on:
+      - ollama
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama-container
+    ports:
+      - "11434:11434"
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge
