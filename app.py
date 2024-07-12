@@ -1,5 +1,4 @@
 import streamlit as st
-import ollama
 from datetime import datetime
 from langchain_community.llms import Ollama
 
@@ -11,8 +10,6 @@ page_style = '''
     background-repeat: no-repeat;
     opacity: 0.9;
     background-attachment: fixed;
-    # position: relative;
-    # backdrop-filter: blur(50px);
   }
   [data-testid="stAppViewContainer"]::before {
     content: "";
@@ -22,7 +19,7 @@ page_style = '''
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white overlay */
+    background-color: rgba(255, 255, 255, 0.1);
   }
   [data-testid="stSidebar"] {
     background-color: rgba(255, 255, 255, 0.1); 
@@ -80,7 +77,7 @@ st.markdown(page_style, unsafe_allow_html=True)
 st.title("Finance Help Chatbot")
 with st.expander("Instructions", expanded=True):
     st.markdown("""
-        Welcome to the Financial Advisior app! 
+        Welcome to the Financial Advisor app! 
         - Query Submission: Please enter your query using the left sidebar.
         - Follow-up Questions: After receiving a response from the chatbot, feel free to ask additional related questions using the chat panel on the right.
         - Enhanced Results: For optimal results, please provide specific details in your queries.
@@ -90,18 +87,15 @@ llm = Ollama(model="phi:latest", base_url="http://ollama-container:11434", verbo
 
 initial_prompt='''You are a highly knowledgeable financial advisor specializing in Indian finance. You have a deep understanding of various financial domains, including personal finance, investments, taxation, real estate, and retirement planning. You are well-versed in Indian financial regulations and policies. Your goal is to provide accurate, insightful, and personalized financial advice to users based on their specific questions and needs.'''
 
-
-
 def sendPrompt(prompt):
     global llm
     response = llm.invoke(prompt)
     return response
 
-
 if 'history' not in st.session_state:
     st.session_state.history = []
     response = sendPrompt(initial_prompt)
-    st.session_state.history.append({'role': 'bot', 'content': response})
+    st.session_state.history.append({'role': 'bot', 'content': response, 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
 
 st.sidebar.header("Ask your finance-related question:")
 st.sidebar.write("Type your question below and click 'Enter'.")
@@ -109,7 +103,7 @@ initial_query = st.sidebar.text_input("Your question:", key="initial_query", pla
 
 if initial_query and 'initial_query_processed' not in st.session_state:
     response = sendPrompt(initial_query)
-    st.session_state.history.append({'role': 'user', 'content': initial_query,'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+    st.session_state.history.append({'role': 'user', 'content': initial_query, 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
     st.session_state.history.append({'role': 'bot', 'content': response, 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
     st.session_state.initial_query_processed = True
 
@@ -122,14 +116,15 @@ with st.container():
             st.markdown(f'<div class="chat-bubble bot"><strong>Bot:</strong> {message["content"]}<div class="timestamp">{message["timestamp"]}</div></div>', unsafe_allow_html=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
-    with st.form(key='chat_form'):
+    with st.form(key='chat_form', clear_on_submit=True):
         st.markdown('<div class="input-container">', unsafe_allow_html=True)
         user_input = st.text_input("", key="user_input", placeholder="Type your message here...")
         submit_button = st.form_submit_button(label='Send')
 
         if submit_button and user_input:
             response = sendPrompt(user_input)
-            st.session_state.history.append({'role': 'user', 'content': user_input,'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
-            st.session_state.history.append({'role': 'bot', 'content': response,'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            st.session_state.history.append({'role': 'user', 'content': user_input, 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            st.session_state.history.append({'role': 'bot', 'content': response, 'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')})
+            st.experimental_rerun()
 
 st.write('<script>window.scrollTo(0,document.body.scrollHeight);</script>', unsafe_allow_html=True)
