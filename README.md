@@ -21,7 +21,7 @@ Welcome to the Finance Help Chatbot! This application provides financial advice 
 
 1. **Clone the repository**:
     ```bash
-    git clone 
+    git clone https://github.com/KaranSingla05/Ollama-Based-Financial-Chatbot.git
     cd Ollama-based-financial-Chatbot
     ```
 
@@ -46,7 +46,7 @@ To deploy the application on an Azure instance:
 2. **Transfer your project to the Azure VM**:
     - *Git clone*:
         ```bash
-        git clone 
+        git clone https://github.com/KaranSingla05/Ollama-Based-Financial-Chatbot.git
         cd Ollama-based-financial-Chatbot
         ```
 
